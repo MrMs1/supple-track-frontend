@@ -76,6 +76,7 @@ function SupplementList({
   } = useQuery<Supplement[]>({
     queryKey: ["supplements"],
     queryFn: fetchSupplements,
+    initialData: defaultData,
   });
 
   if (isLoading) return <div>Loading...</div>;
