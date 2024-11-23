@@ -1,12 +1,14 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { max } from "date-fns";
-import { Calendar, ChevronRight, Pill, Plus } from "lucide-react";
+import { Calendar, ChevronRight, Pill, Plus, Trash2 } from "lucide-react";
 import React from "react";
+import CreateButton from "../components/CreateButton";
+import DeleteButton from "../components/DeleteButton";
 import ItemColumnDetailText from "../components/ItemColumnDetailText";
 import SupplementColumnDetailText from "../components/SuppleColumnDetailText";
-import { fetchSupplements } from "../lib/backendApi";
+import { deleteSupplement, fetchSupplements } from "../lib/backendApi";
 import type { Supplement } from "../lib/types";
 import Item from "./Item";
 
@@ -82,6 +84,19 @@ function SupplementList({
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (supplementName: string) => deleteSupplement(supplementName),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["supplements"] });
+    },
+  });
+
+  const onDeleteSupplement = (supplementName: string) => {
+    mutation.mutate(supplementName);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
@@ -89,25 +104,18 @@ function SupplementList({
           <Pill className="h-6 w-6 text-indigo-600 mr-2" />
           <h2 className="text-2xl font-bold text-gray-900">サプリメント一覧</h2>
         </div>
-        <button
-          type="button"
-          onClick={onAddSupplement}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          <Plus className="h-5 w-5 mr-2" />
-          サプリメント登録
-        </button>
+        {supplements !== undefined && supplements.length > 0 && (
+          <CreateButton onAdd={onAddSupplement} />
+        )}
       </div>
 
       {supplements === undefined || supplements.length === 0 ? (
         <div className="text-center py-12">
           <Pill className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
+          <h3 className="my-2 text-sm font-medium text-gray-900">
             サプリメントが登録されていません
           </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            サプリメント登録ボタンからサプリメントを追加してください
-          </p>
+          <CreateButton onAdd={onAddSupplement} label="サプリメント登録" />
         </div>
       ) : (
         supplements.map((supplement) => {
@@ -154,21 +162,19 @@ function SupplementList({
                       />
                     </div>
                   </button>
-                  {supplement.items.length > 0 && (
-                    <ChevronRight
-                      className={`h-5 w-5 text-gray-400 transform transition-transform duration-200 ${
-                        isOpen ? "rotate-90" : ""
-                      }`}
+                  <div className="flex items-center gap-2">
+                    {supplement.items.length > 0 && (
+                      <ChevronRight
+                        className={`h-5 w-5 text-gray-400 transform transition-transform duration-200 ${
+                          isOpen ? "rotate-90" : ""
+                        }`}
+                      />
+                    )}
+                    <CreateButton onAdd={() => onAddItem(supplement)} />
+                    <DeleteButton
+                      onDelete={() => onDeleteSupplement(supplement.name)}
                     />
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => onAddItem(supplement)}
-                    className="ml-4 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    商品追加
-                  </button>
+                  </div>
                 </div>
               </div>
 

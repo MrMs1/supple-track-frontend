@@ -44,3 +44,11 @@ export const deleteItem = async (itemId: string) => {
     method: "DELETE",
   });
 };
+
+export const deleteSupplement = async (supplementName: string) => {
+  const response = await fetch("http://localhost:8080/api/supplement", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: supplementName }),
+  });
+};
