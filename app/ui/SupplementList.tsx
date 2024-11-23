@@ -141,10 +141,12 @@ function SupplementList({
             <div key={supplement.name} className="space-y-4">
               <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
                 <div className="flex justify-between items-center">
-                  <button
-                    type="button"
-                    className="flex-grow cursor-pointer"
-                    onClick={() => onSelectSupplement(supplement.name)}
+                  <div
+                    className={`flex-grow ${supplement.items.length > 0 ? "cursor-pointer" : ""}`}
+                    {...(supplement.items.length > 0 && {
+                      role: "button",
+                      onClick: () => onSelectSupplement(supplement.name),
+                    })}
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-bold text-gray-900">
@@ -161,7 +163,7 @@ function SupplementList({
                         value={latestExpiryDate}
                       />
                     </div>
-                  </button>
+                  </div>
                   <div className="flex items-center gap-2">
                     {supplement.items.length > 0 && (
                       <ChevronRight
