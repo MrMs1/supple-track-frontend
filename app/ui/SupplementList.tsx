@@ -114,15 +114,25 @@ function SupplementList({
           const isOpen = selectedSupplement.has(supplement.name);
 
           // todo ここはバックエンドに寄せる
-          const latestEndDate = max(supplement.items.map((item) => item.endAt));
+          const latestEndDate =
+            supplement.items.length > 0
+              ? max(
+                  supplement.items.map((item) => new Date(item.endAt)),
+                ).toLocaleDateString("ja-JP")
+              : "-";
+
           // todo ここはバックエンドに寄せる
-          const latestExpiryDate = max(
-            supplement.items.map((item) => item.expiredAt),
-          );
+          const latestExpiryDate =
+            supplement.items.length > 0
+              ? max(
+                  supplement.items.map((item) => new Date(item.expiredAt)),
+                ).toLocaleDateString("ja-JP")
+              : "-";
+
           return (
             <div key={supplement.name} className="space-y-4">
               <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-center">
                   <button
                     type="button"
                     className="flex-grow cursor-pointer"
@@ -132,31 +142,25 @@ function SupplementList({
                       <h3 className="text-lg font-bold text-gray-900">
                         {supplement.name}
                       </h3>
-                      <ChevronRight
-                        className={`h-5 w-5 text-gray-400 transform transition-transform duration-200 ${
-                          isOpen ? "rotate-90" : ""
-                        }`}
-                      />
                     </div>
                     <div className="mt-2 flex gap-10">
-                      {latestEndDate && (
-                        <SupplementColumnDetailText
-                          text="最終使用日: "
-                          value={new Date(latestEndDate).toLocaleDateString(
-                            "ja-JP",
-                          )}
-                        />
-                      )}
-                      {latestExpiryDate && (
-                        <SupplementColumnDetailText
-                          text="最終期限: "
-                          value={new Date(latestExpiryDate).toLocaleDateString(
-                            "ja-JP",
-                          )}
-                        />
-                      )}
+                      <SupplementColumnDetailText
+                        text="最終使用日: "
+                        value={latestEndDate}
+                      />
+                      <SupplementColumnDetailText
+                        text="最終期限: "
+                        value={latestExpiryDate}
+                      />
                     </div>
                   </button>
+                  {supplement.items.length > 0 && (
+                    <ChevronRight
+                      className={`h-5 w-5 text-gray-400 transform transition-transform duration-200 ${
+                        isOpen ? "rotate-90" : ""
+                      }`}
+                    />
+                  )}
                   <button
                     type="button"
                     onClick={() => onAddItem(supplement)}
