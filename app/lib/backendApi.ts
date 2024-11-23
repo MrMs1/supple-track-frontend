@@ -38,3 +38,9 @@ export const addItem = async (itemData: ItemFormData) => {
     throw new Error("Failed to add item");
   }
 };
+
+export const deleteItem = async (itemId: string) => {
+  const response = await fetch(`http://localhost:8080/api/item/${itemId}`, {
+    method: "DELETE",
+  });
+};
