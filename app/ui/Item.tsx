@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
+import DeleteButton from "../components/DeleteButton";
 import ItemColumnDetailText from "../components/ItemColumnDetailText";
 import { deleteItem } from "../lib/backendApi";
 import type { Item as ItemType } from "../lib/types";
@@ -35,13 +36,7 @@ function Item({ item }: ItemProps) {
       >
         編集
       </button> */}
-        <button
-          type="button"
-          onClick={() => onDeleteItem(item.id)}
-          className="ml-4 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-        >
-          <Trash2 size={16} />
-        </button>
+        <DeleteButton onDelete={() => onDeleteItem(item.id)} />
       </div>
       <div className="flex items-start">
         <div>
