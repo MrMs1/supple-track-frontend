@@ -96,6 +96,9 @@ function SupplementList({
   const onDeleteSupplement = (supplementName: string) => {
     mutation.mutate(supplementName);
   };
+  const existItems = (supplement: Supplement) => {
+    return supplement.items.length > 0;
+  };
 
   return (
     <div className="space-y-4">
@@ -122,28 +125,26 @@ function SupplementList({
           const isOpen = selectedSupplement.has(supplement.name);
 
           // todo ここはバックエンドに寄せる
-          const latestEndDate =
-            supplement.items.length > 0
-              ? max(
-                  supplement.items.map((item) => new Date(item.endAt)),
-                ).toLocaleDateString("ja-JP")
-              : "-";
+          const latestEndDate = existItems(supplement)
+            ? max(
+                supplement.items.map((item) => new Date(item.endAt)),
+              ).toLocaleDateString("ja-JP")
+            : "-";
 
           // todo ここはバックエンドに寄せる
-          const latestExpiryDate =
-            supplement.items.length > 0
-              ? max(
-                  supplement.items.map((item) => new Date(item.expiredAt)),
-                ).toLocaleDateString("ja-JP")
-              : "-";
+          const latestExpiryDate = existItems(supplement)
+            ? max(
+                supplement.items.map((item) => new Date(item.expiredAt)),
+              ).toLocaleDateString("ja-JP")
+            : "-";
 
           return (
             <div key={supplement.name} className="space-y-4">
               <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
                 <div className="flex justify-between items-center">
                   <div
-                    className={`flex-grow ${supplement.items.length > 0 ? "cursor-pointer" : ""}`}
-                    {...(supplement.items.length > 0 && {
+                    className={`flex-grow ${existItems(supplement) ? "cursor-pointer" : ""}`}
+                    {...(existItems(supplement) && {
                       role: "button",
                       onClick: () => onSelectSupplement(supplement.name),
                     })}
@@ -165,7 +166,7 @@ function SupplementList({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {supplement.items.length > 0 && (
+                    {existItems(supplement) && (
                       <ChevronRight
                         className={`h-5 w-5 text-gray-400 transform transition-transform duration-200 ${
                           isOpen ? "rotate-90" : ""
