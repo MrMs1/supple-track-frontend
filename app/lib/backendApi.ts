@@ -1,7 +1,9 @@
 import type { ItemFormData, Supplement, SupplementFormData } from "./types";
 
+const BACKEND_API_URL = process.env.BACKEND_API_URL;
+
 export const fetchSupplements = async () => {
-  const response = await fetch("http://localhost:8080/api/supplements");
+  const response = await fetch(`${BACKEND_API_URL}/api/supplements`);
   return await response.json().then((data) =>
     data.map((supplement: Supplement) => ({
       ...supplement,
@@ -16,7 +18,7 @@ export const fetchSupplements = async () => {
 };
 
 export const addSupplement = async (supplementData: SupplementFormData) => {
-  const response = await fetch("http://localhost:8080/api/supplement", {
+  const response = await fetch(`${BACKEND_API_URL}/api/supplement`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(supplementData),
@@ -28,7 +30,7 @@ export const addSupplement = async (supplementData: SupplementFormData) => {
 };
 
 export const addItem = async (itemData: ItemFormData) => {
-  const response = await fetch("http://localhost:8080/api/item", {
+  const response = await fetch(`${BACKEND_API_URL}/api/item`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(itemData),
@@ -40,13 +42,13 @@ export const addItem = async (itemData: ItemFormData) => {
 };
 
 export const deleteItem = async (itemId: string) => {
-  const response = await fetch(`http://localhost:8080/api/item/${itemId}`, {
+  const response = await fetch(`${BACKEND_API_URL}/api/item/${itemId}`, {
     method: "DELETE",
   });
 };
 
 export const deleteSupplement = async (supplementName: string) => {
-  const response = await fetch("http://localhost:8080/api/supplement", {
+  const response = await fetch(`${BACKEND_API_URL}/api/supplement`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name: supplementName }),
