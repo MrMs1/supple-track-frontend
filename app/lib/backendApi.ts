@@ -1,6 +1,6 @@
 import type { ItemFormData, Supplement, SupplementFormData } from "./types";
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL;
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const fetchSupplements = async () => {
   const response = await fetch(`${BACKEND_API_URL}/api/supplements`);
