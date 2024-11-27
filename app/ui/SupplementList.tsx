@@ -25,6 +25,8 @@ function SupplementList({
   onAddItem,
   onAddSupplement,
 }: SupplementListProps) {
+  const queryClient = useQueryClient();
+
   const {
     data: supplements,
     isLoading,
@@ -33,11 +35,6 @@ function SupplementList({
     queryKey: ["supplements"],
     queryFn: fetchSupplements,
   });
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (supplementName: string) => deleteSupplement(supplementName),
@@ -52,6 +49,9 @@ function SupplementList({
   const existItems = (supplement: Supplement) => {
     return supplement.items.length > 0;
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="space-y-4">
