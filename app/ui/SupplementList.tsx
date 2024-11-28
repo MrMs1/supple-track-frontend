@@ -2,11 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { max } from "date-fns";
-import { Calendar, ChevronRight, Pill, Plus, Trash2 } from "lucide-react";
+import { ChevronRight, Pill } from "lucide-react";
 import React from "react";
 import CreateButton from "../components/CreateButton";
 import DeleteButton from "../components/DeleteButton";
-import ItemColumnDetailText from "../components/ItemColumnDetailText";
 import SupplementColumnDetailText from "../components/SuppleColumnDetailText";
 import { deleteSupplement, fetchSupplements } from "../lib/backendApi";
 import type { Supplement } from "../lib/types";
@@ -84,7 +83,7 @@ function SupplementList({
   } = useQuery<Supplement[]>({
     queryKey: ["supplements"],
     queryFn: fetchSupplements,
-    initialData: defaultData,
+    placeholderData: defaultData,
   });
 
   const mutation = useMutation({
@@ -102,7 +101,7 @@ function SupplementList({
   };
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  const responseData = error ? defaultData : supplements;
 
   return (
     <div className="space-y-4">
@@ -111,12 +110,12 @@ function SupplementList({
           <Pill className="h-6 w-6 text-indigo-600 mr-2" />
           <h2 className="text-2xl font-bold text-gray-900">サプリメント一覧</h2>
         </div>
-        {supplements !== undefined && supplements.length > 0 && (
+        {responseData !== undefined && responseData.length > 0 && (
           <CreateButton onAdd={onAddSupplement} />
         )}
       </div>
 
-      {supplements === undefined || supplements.length === 0 ? (
+      {responseData === undefined || responseData.length === 0 ? (
         <div className="text-center py-12">
           <Pill className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="my-2 text-sm font-medium text-gray-900">
@@ -125,7 +124,7 @@ function SupplementList({
           <CreateButton onAdd={onAddSupplement} label="サプリメント登録" />
         </div>
       ) : (
-        supplements.map((supplement) => {
+        responseData.map((supplement) => {
           const isOpen = selectedSupplement.has(supplement.name);
 
           // todo ここはバックエンドに寄せる
