@@ -19,6 +19,56 @@ interface SupplementListProps {
   onAddSupplement: () => void;
 }
 
+const defaultData: Supplement[] = [
+  {
+    name: "これはデフォルトデータです",
+    items: [
+      {
+        id: "1",
+        name: "テスト商品",
+        quantity: 100,
+        dosagePerUse: 1,
+        dailyIntakeFrequency: 1,
+        supplyDays: 30,
+        expiredAt: new Date(),
+        endAt: new Date(),
+        startAt: new Date(),
+      },
+      {
+        id: "2",
+        name: "ビタミンD 500IU",
+        quantity: 100,
+        dosagePerUse: 1,
+        dailyIntakeFrequency: 1,
+        supplyDays: 30,
+        expiredAt: new Date(),
+        endAt: new Date(),
+        startAt: new Date(),
+      },
+    ],
+  },
+  {
+    name: "バックエンドとの通信が出来ない場合のデフォルトデータです",
+    items: [],
+  },
+  {
+    name: "クレアチン",
+    items: [
+      {
+        id: "3",
+        name: "クレアチン 1000mg カプセル",
+        quantity: 100,
+        dosagePerUse: 1,
+        dailyIntakeFrequency: 1,
+        supplyDays: 30,
+        expiredAt: new Date(),
+        endAt: new Date(),
+        startAt: new Date(),
+      },
+    ],
+  },
+];
+
 function SupplementList({
   selectedSupplement,
   onSelectSupplement,
@@ -34,6 +84,7 @@ function SupplementList({
   } = useQuery<Supplement[]>({
     queryKey: ["supplements"],
     queryFn: fetchSupplements,
+    initialData: defaultData,
   });
 
   const mutation = useMutation({
