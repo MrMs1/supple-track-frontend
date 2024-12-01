@@ -5,9 +5,13 @@ interface ItemColumnDetailTextProps {
 
 function ItemColumnDetailText({ text, value }: ItemColumnDetailTextProps) {
   return (
-    <div>
-      <p className="text-sm font-medium text-gray-900">{text}</p>
-      <p className="text-sm font-medium text-gray-500">{value}</p>
+    <div className="w-28">
+      <p className="text-sm font-medium text-gray-900 whitespace-normal break-words">
+        {text}
+      </p>
+      <p className="text-sm font-medium text-gray-500 whitespace-normal break-words">
+        {value}
+      </p>
     </div>
   );
 }

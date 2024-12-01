@@ -39,8 +39,8 @@ function Item({ item }: ItemProps) {
         <DeleteButton onDelete={() => onDeleteItem(item.id)} />
       </div>
       <div className="flex items-start">
-        <div>
-          <div className="mt-2 flex justify-between gap-10">
+        <div className="w-full">
+          <div className="mt-2 flex flex-wrap gap-4">
             <ItemColumnDetailText text="総数量" value={`${item.quantity}錠`} />
             <ItemColumnDetailText
               text="1回の摂取量"
