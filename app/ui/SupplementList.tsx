@@ -1,7 +1,11 @@
 "use client";
 
 import { Skeleton } from "@nextui-org/skeleton";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { max } from "date-fns";
 import { ChevronRight, Pill } from "lucide-react";
 import React, { Suspense } from "react";
@@ -61,7 +65,7 @@ function SupplementList({
 }: SupplementListProps) {
   const queryClient = useQueryClient();
 
-  const { data: supplements, error } = useQuery<Supplement[]>({
+  const { data: supplements, error } = useSuspenseQuery<Supplement[]>({
     queryKey: ["supplements"],
     queryFn: fetchSupplements,
   });
@@ -80,8 +84,6 @@ function SupplementList({
     return supplement.items.length > 0;
   };
 
-  const responseData = error ? undefined : supplements;
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
@@ -89,12 +91,10 @@ function SupplementList({
           <Pill className="h-6 w-6 text-indigo-600 mr-2" />
           <h2 className="text-2xl font-bold text-gray-900">サプリメント一覧</h2>
         </div>
-        {responseData !== undefined && responseData.length > 0 && (
-          <CreateButton onAdd={onAddSupplement} />
-        )}
+        {error && <CreateButton onAdd={onAddSupplement} />}
       </div>
 
-      {responseData === undefined || responseData.length === 0 ? (
+      {error ? (
         <div className="text-center py-20">
           <Pill className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="my-2 text-sm font-medium text-gray-900">
@@ -103,7 +103,7 @@ function SupplementList({
           <CreateButton onAdd={onAddSupplement} label="サプリメント登録" />
         </div>
       ) : (
-        responseData.map((supplement) => {
+        supplements.map((supplement) => {
           const isOpen = selectedSupplement.has(supplement.name);
 
           // todo ここはバックエンドに寄せる
