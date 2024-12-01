@@ -31,8 +31,9 @@ function ItemForm({ supplement, onClose }: ItemFormProps) {
     },
   });
 
-  const [form, fields] = useForm<ItemFormFields>({
-    onSubmit: (_, { formData }) => {
+  const [form] = useForm<ItemFormFields>({
+    onSubmit: (event, { formData }) => {
+      event.preventDefault();
       const item: ItemFormData = {
         supplementName: supplement.name,
         itemName: formData.get("itemName") as string,
