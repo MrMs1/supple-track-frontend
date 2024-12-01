@@ -1,9 +1,10 @@
 "use client";
 
+import { Skeleton } from "@nextui-org/skeleton";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { max } from "date-fns";
 import { ChevronRight, Pill } from "lucide-react";
-import React from "react";
+import React, { Suspense } from "react";
 import CreateButton from "../components/CreateButton";
 import DeleteButton from "../components/DeleteButton";
 import SupplementColumnDetailText from "../components/SuppleColumnDetailText";
@@ -18,55 +19,39 @@ interface SupplementListProps {
   onAddSupplement: () => void;
 }
 
-const defaultData: Supplement[] = [
-  {
-    name: "これはデフォルトデータです",
-    items: [
-      {
-        id: "1",
-        name: "テスト商品",
-        quantity: 100,
-        dosagePerUse: 1,
-        dailyIntakeFrequency: 1,
-        supplyDays: 30,
-        expiredAt: new Date(),
-        endAt: new Date(),
-        startAt: new Date(),
-      },
-      {
-        id: "2",
-        name: "ビタミンD 500IU",
-        quantity: 100,
-        dosagePerUse: 1,
-        dailyIntakeFrequency: 1,
-        supplyDays: 30,
-        expiredAt: new Date(),
-        endAt: new Date(),
-        startAt: new Date(),
-      },
-    ],
-  },
-  {
-    name: "バックエンドとの通信が出来ない場合のデフォルトデータです",
-    items: [],
-  },
-  {
-    name: "クレアチン",
-    items: [
-      {
-        id: "3",
-        name: "クレアチン 1000mg カプセル",
-        quantity: 100,
-        dosagePerUse: 1,
-        dailyIntakeFrequency: 1,
-        supplyDays: 30,
-        expiredAt: new Date(),
-        endAt: new Date(),
-        startAt: new Date(),
-      },
-    ],
-  },
-];
+function SupplementListSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Pill className="h-6 w-6 text-indigo-600 mr-2" />
+          <h2 className="text-2xl font-bold text-gray-900">サプリメント一覧</h2>
+        </div>
+      </div>
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white border rounded-lg p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex-grow">
+                <Skeleton className="rounded-lg">
+                  <div className="h-7 w-32 rounded-lg bg-default-200" />
+                </Skeleton>
+                <div className="mt-2 grid grid-cols-2 gap-4 w-[400px]">
+                  <Skeleton className="rounded-lg">
+                    <div className="h-5 w-full rounded-lg bg-default-200" />
+                  </Skeleton>
+                  <Skeleton className="rounded-lg">
+                    <div className="h-5 w-full rounded-lg bg-default-200" />
+                  </Skeleton>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function SupplementList({
   selectedSupplement,
@@ -76,14 +61,9 @@ function SupplementList({
 }: SupplementListProps) {
   const queryClient = useQueryClient();
 
-  const {
-    data: supplements,
-    isLoading,
-    error,
-  } = useQuery<Supplement[]>({
+  const { data: supplements, error } = useQuery<Supplement[]>({
     queryKey: ["supplements"],
     queryFn: fetchSupplements,
-    placeholderData: defaultData,
   });
 
   const mutation = useMutation({
@@ -100,8 +80,7 @@ function SupplementList({
     return supplement.items.length > 0;
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  const responseData = error ? defaultData : supplements;
+  const responseData = error ? undefined : supplements;
 
   return (
     <div className="space-y-4">
@@ -116,7 +95,7 @@ function SupplementList({
       </div>
 
       {responseData === undefined || responseData.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-20">
           <Pill className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="my-2 text-sm font-medium text-gray-900">
             サプリメントが登録されていません
@@ -157,7 +136,7 @@ function SupplementList({
                         {supplement.name}
                       </h3>
                     </div>
-                    <div className="mt-2 flex gap-10">
+                    <div className="mt-2 grid grid-cols-2 gap-4 w-[400px]">
                       <SupplementColumnDetailText
                         text="最終使用日: "
                         value={latestEndDate}
@@ -199,4 +178,10 @@ function SupplementList({
   );
 }
 
-export default SupplementList;
+export default function SupplementListWithSuspense(props: SupplementListProps) {
+  return (
+    <Suspense fallback={<SupplementListSkeleton />}>
+      <SupplementList {...props} />
+    </Suspense>
+  );
+}
