@@ -1,6 +1,9 @@
 export interface Supplement {
   name: string;
   items: Item[];
+  endAt?: Date;
+  totalSupplyDays: number;
+  totalRestOfSupplyDays: number;
 }
 
 export interface Item {
@@ -13,6 +16,7 @@ export interface Item {
   expiredAt: Date;
   startAt: Date;
   endAt: Date;
+  restOfSupplyDays: number;
 }
 
 export interface SupplementFormData {
