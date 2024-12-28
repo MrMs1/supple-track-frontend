@@ -17,7 +17,6 @@ import { SupplementCard } from "./SupplementCard";
 interface SupplementListProps {
   selectedSupplement: Set<string>;
   onSelectSupplement: (supplementName: string) => void;
-  onAddItem: (supplement: Supplement) => void;
   onAddSupplement: () => void;
 }
 
@@ -58,7 +57,6 @@ function SupplementListSkeleton() {
 function SupplementList({
   selectedSupplement,
   onSelectSupplement,
-  onAddItem,
   onAddSupplement,
 }: SupplementListProps) {
   const queryClient = useQueryClient();
@@ -97,7 +95,6 @@ function SupplementList({
                   supplement={supplement}
                   selectedSupplement={selectedSupplement}
                   onSelectSupplement={onSelectSupplement}
-                  onAddItem={() => onAddItem(supplement)}
                 />
 
                 <div
