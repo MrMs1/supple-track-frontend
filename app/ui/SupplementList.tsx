@@ -1,20 +1,14 @@
 "use client";
 
 import { Skeleton } from "@nextui-org/skeleton";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Pill } from "lucide-react";
 import React, { Suspense, useState } from "react";
 import CreateButton from "../components/CreateButton";
 import { fetchSupplements } from "../lib/backendApi";
 import type { Supplement } from "../lib/types";
-import { ItemCard } from "./ItemCard";
 import { SupplementCard } from "./SupplementCard";
 import SupplementForm from "./SupplementForm";
-
-interface SupplementListProps {
-  selectedSupplement: Set<string>;
-  onSelectSupplement: (supplementName: string) => void;
-}
 
 function SupplementListSkeleton() {
   return (
@@ -50,10 +44,7 @@ function SupplementListSkeleton() {
   );
 }
 
-function SupplementList({
-  selectedSupplement,
-  onSelectSupplement,
-}: SupplementListProps) {
+function SupplementList() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const { data: supplements, isSuccess } = useSuspenseQuery<Supplement[]>({
@@ -89,27 +80,10 @@ function SupplementList({
             <div className="space-y-4">
               {supplements.map((supplement) => {
                 return (
-                  <div key={supplement.name} className="group">
-                    <SupplementCard
-                      supplement={supplement}
-                      selectedSupplement={selectedSupplement}
-                      onSelectSupplement={onSelectSupplement}
-                    />
-
-                    <div
-                      className={`mt-4 space-y-4 overflow-hidden transition-all duration-300 ${
-                        selectedSupplement.has(supplement.name)
-                          ? "max-h-[2000px] opacity-100"
-                          : "max-h-0 opacity-0"
-                      }`}
-                    >
-                      <div className="ml-8 space-y-4">
-                        {supplement.items.map((item) => (
-                          <ItemCard key={item.id} item={item} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <SupplementCard
+                    key={supplement.name}
+                    supplement={supplement}
+                  />
                 );
               })}
             </div>
@@ -121,10 +95,10 @@ function SupplementList({
   );
 }
 
-export default function SupplementListWithSuspense(props: SupplementListProps) {
+export default function SupplementListWithSuspense() {
   return (
     <Suspense fallback={<SupplementListSkeleton />}>
-      <SupplementList {...props} />
+      <SupplementList />
     </Suspense>
   );
 }

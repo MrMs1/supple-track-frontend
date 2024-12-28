@@ -1,26 +1,7 @@
-"use client";
-
 import { Package2 } from "lucide-react";
-import { useState } from "react";
 import SupplementList from "./ui/SupplementList";
 
 export default function Home() {
-  const [selectedSupplement, setSelectedSupplement] = useState<Set<string>>(
-    new Set(),
-  );
-
-  const handleSelectSupplement = (supplementName: string) => {
-    setSelectedSupplement((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(supplementName)) {
-        newSet.delete(supplementName);
-      } else {
-        newSet.add(supplementName);
-      }
-      return newSet;
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <header className="bg-white shadow-lg">
@@ -39,10 +20,7 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SupplementList
-          selectedSupplement={selectedSupplement}
-          onSelectSupplement={handleSelectSupplement}
-        />
+        <SupplementList />
       </main>
     </div>
   );

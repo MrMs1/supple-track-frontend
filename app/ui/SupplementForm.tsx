@@ -1,5 +1,3 @@
-"use client";
-
 import { FormProvider, getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

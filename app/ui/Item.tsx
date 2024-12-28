@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
 import DeleteButton from "../components/DeleteButton";
 import ItemColumnDetailText from "../components/ItemColumnDetailText";
 import { deleteItem } from "../lib/backendApi";

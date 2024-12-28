@@ -8,21 +8,17 @@ import type { Supplement } from "../lib/types";
 import { checkExpirationWarning, formatDate } from "../utils/date";
 import { Badge } from "./Badge";
 import { Card } from "./Card";
+import { ItemCard } from "./ItemCard";
 import ItemForm from "./ItemForm";
 import { Progress } from "./Progress";
 
 interface SupplementCardProps {
-  selectedSupplement: Set<string>;
-  onSelectSupplement: (supplementName: string) => void;
   supplement: Supplement;
 }
 
-export function SupplementCard({
-  supplement,
-  selectedSupplement,
-  onSelectSupplement,
-}: SupplementCardProps) {
+export function SupplementCard({ supplement }: SupplementCardProps) {
   const [isItemFormOpen, setIsItemFormOpen] = useState(false);
+  const [selectedSupplement, setSelectedSupplement] = useState(false);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -52,7 +48,7 @@ export function SupplementCard({
           <div className="flex justify-between items-start">
             <div
               className="flex-grow cursor-pointer group"
-              onClick={() => onSelectSupplement(supplement.name)}
+              onClick={() => setSelectedSupplement(!selectedSupplement)}
             >
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
@@ -84,7 +80,7 @@ export function SupplementCard({
                   {supplement.items.length > 0 && (
                     <ChevronRight
                       className={`h-5 w-5 text-gray-400 transform transition-transform duration-300 ease-in-out group-hover:text-indigo-600 ${
-                        selectedSupplement.has(supplement.name)
+                        selectedSupplement
                           ? "rotate-90"
                           : "group-hover:translate-x-1"
                       }`}
@@ -118,6 +114,17 @@ export function SupplementCard({
           </div>
         </div>
       </Card>
+      <div
+        className={`mt-4 space-y-4 overflow-hidden transition-all duration-300 ${
+          selectedSupplement
+            ? "max-h-[2000px] opacity-100"
+            : "max-h-0 opacity-0"
+        }`}
+      >
+        {supplement.items.map((item) => (
+          <ItemCard key={item.id} item={item} />
+        ))}
+      </div>
       {isItemFormOpen && (
         <ItemForm
           supplement={supplement}
