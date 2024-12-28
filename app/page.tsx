@@ -2,11 +2,9 @@
 
 import { Package2 } from "lucide-react";
 import { useState } from "react";
-import SupplementForm from "./ui/SupplementForm";
 import SupplementList from "./ui/SupplementList";
 
 export default function Home() {
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedSupplement, setSelectedSupplement] = useState<Set<string>>(
     new Set(),
   );
@@ -41,15 +39,10 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {isFormOpen && <SupplementForm onClose={() => setIsFormOpen(false)} />}
-
-        <div className="bg-white rounded-lg shadow-xl p-6">
-          <SupplementList
-            selectedSupplement={selectedSupplement}
-            onSelectSupplement={handleSelectSupplement}
-            onAddSupplement={() => setIsFormOpen(true)}
-          />
-        </div>
+        <SupplementList
+          selectedSupplement={selectedSupplement}
+          onSelectSupplement={handleSelectSupplement}
+        />
       </main>
     </div>
   );
