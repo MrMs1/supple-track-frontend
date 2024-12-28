@@ -41,13 +41,7 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {isFormOpen && (
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-              <SupplementForm onClose={() => setIsFormOpen(false)} />
-            </div>
-          </div>
-        )}
+        {isFormOpen && <SupplementForm onClose={() => setIsFormOpen(false)} />}
 
         <div className="bg-white rounded-lg shadow-xl p-6">
           <SupplementList
