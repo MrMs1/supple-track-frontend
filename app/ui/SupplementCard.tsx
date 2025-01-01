@@ -45,52 +45,43 @@ export function SupplementCard({ supplement }: SupplementCardProps) {
     <>
       <Card>
         <div className="p-5">
-          <div className="flex justify-between items-start">
-            <div
-              className="flex-grow cursor-pointer group"
-              onClick={() => setSelectedSupplement(!selectedSupplement)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                      {supplement.name}
-                    </h3>
-                    {hasExpirationWarning && (
-                      <div className="inline-flex items-center relative">
-                        <AlertCircle className="h-4 w-4 text-red-500 hover:opacity-80 peer" />
-                        <div className="absolute left-0 top-6 w-48 p-2 bg-white rounded-lg shadow-lg text-sm text-red-600 opacity-0 peer-hover:opacity-100 transition-opacity z-10">
-                          一部の商品で在庫がなくなる前に使用期限が切れます
-                        </div>
-                      </div>
-                    )}
+          <div className="flex items-start gap-4">
+            <div className="flex-grow">
+              <div
+                className="flex items-center gap-2 cursor-pointer group"
+                onClick={() => setSelectedSupplement(!selectedSupplement)}
+              >
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  {supplement.name}
+                </h3>
+                {hasExpirationWarning && (
+                  <div className="inline-flex items-center relative">
+                    <AlertCircle className="h-4 w-4 text-red-500 hover:opacity-80 peer" />
+                    <div className="absolute left-0 top-6 w-48 p-2 bg-white rounded-lg shadow-lg text-sm text-red-600 opacity-0 peer-hover:opacity-100 transition-opacity z-10">
+                      一部の商品で在庫がなくなる前に使用期限が切れます
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={supplyStatus}>
-                      {supplement.totalRestOfSupplyDays > 0 && supplement.endAt
-                        ? `${formatDate(supplement.endAt)}まで`
-                        : "在庫切れ"}
-                    </Badge>
-                    <span className="text-sm text-gray-500">
-                      {supplement.items.length}個の商品
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {supplement.items.length > 0 && (
-                    <ChevronRight
-                      className={`h-5 w-5 text-gray-400 transform transition-transform duration-300 ease-in-out group-hover:text-indigo-600 ${
-                        selectedSupplement
-                          ? "rotate-90"
-                          : "group-hover:translate-x-1"
-                      }`}
-                    />
-                  )}
-                  <CreateButton onAdd={() => setIsItemFormOpen(true)} />
-                  <DeleteButton
-                    onDelete={() => onDeleteSupplement(supplement.name)}
+                )}
+                {supplement.items.length > 0 && (
+                  <ChevronRight
+                    className={`h-5 w-5 text-gray-400 transform transition-transform duration-300 ease-in-out group-hover:text-indigo-600 ${
+                      selectedSupplement
+                        ? "rotate-90"
+                        : "group-hover:translate-x-1"
+                    }`}
                   />
-                </div>
+                )}
+              </div>
+
+              <div className="mt-2 flex items-center space-x-2">
+                <Badge variant={supplyStatus}>
+                  {supplement.totalRestOfSupplyDays > 0 && supplement.endAt
+                    ? `${formatDate(supplement.endAt)}まで`
+                    : "在庫切れ"}
+                </Badge>
+                <span className="text-sm text-gray-500">
+                  {supplement.items.length}個の商品
+                </span>
               </div>
 
               {supplement.totalRestOfSupplyDays > 0 && supplement.endAt && (
@@ -110,6 +101,13 @@ export function SupplementCard({ supplement }: SupplementCardProps) {
                   />
                 </div>
               )}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <CreateButton onAdd={() => setIsItemFormOpen(true)} />
+              <DeleteButton
+                onDelete={() => onDeleteSupplement(supplement.name)}
+              />
             </div>
           </div>
         </div>
