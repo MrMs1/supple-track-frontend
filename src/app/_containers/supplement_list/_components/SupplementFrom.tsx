@@ -1,6 +1,6 @@
 "use client";
-import FormInput from "@/app/components/FormInput";
-import { supplementFormSchema } from "@/app/schema/supplementFormSchema";
+import FormInput from "@/app/_components/FormInput";
+import { supplementFormSchema } from "@/app/_schema/supplementFormSchema";
 import { FormProvider, getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { X } from "lucide-react";

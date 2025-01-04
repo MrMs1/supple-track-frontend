@@ -1,7 +1,7 @@
 "use client";
 
-import CreateButton from "@/app/components/CreateButton";
-import type { Supplement } from "@/app/lib/types";
+import CreateButton from "@/app/_components/CreateButton";
+import type { Supplement } from "@/app/_types/types";
 import { useState } from "react";
 import ItemForm from "../ItemForm";
 

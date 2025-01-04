@@ -1,6 +1,6 @@
 "use server";
 
-import { itemFormSchema } from "@/app/schema/itemFormSchema";
+import { itemFormSchema } from "@/app/_schema/itemFormSchema";
 import { parseWithZod } from "@conform-to/zod";
 import { revalidateTag } from "next/cache";
 

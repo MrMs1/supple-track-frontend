@@ -1,11 +1,11 @@
 "use client";
 
+import { Badge } from "@/app/_components/Badge";
 import { Card } from "@/app/_components/Card";
-import DeleteButton from "@/app/components/DeleteButton";
-import { Progress } from "@/app/components/Progress";
-import type { Supplement } from "@/app/lib/types";
-import { Badge } from "@/app/ui/Badge";
-import { checkExpirationWarning, formatDate } from "@/app/utils/date";
+import DeleteButton from "@/app/_components/DeleteButton";
+import { Progress } from "@/app/_components/Progress";
+import type { Supplement } from "@/app/_types/types";
+import { checkExpirationWarning, formatDate } from "@/app/_utils/date";
 import { AlertCircle, ChevronRight } from "lucide-react";
 import { startTransition, useOptimistic, useState } from "react";
 import { CreateItemButton } from "./item/CreateItemButton";

@@ -1,4 +1,4 @@
-import type { Supplement } from "@/app/lib/types";
+import type { Supplement } from "@/app/_types/types";
 import SupplementsWithSuspense from "./presentational";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;

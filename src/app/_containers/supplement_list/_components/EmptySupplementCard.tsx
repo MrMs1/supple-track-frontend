@@ -1,6 +1,6 @@
 "use client";
 
-import CreateButton from "@/app/components/CreateButton";
+import CreateButton from "@/app/_components/CreateButton";
 import { Pill } from "lucide-react";
 import { useState } from "react";
 import SupplementForm from "./SupplementFrom";

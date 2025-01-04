@@ -1,9 +1,9 @@
+import { Badge } from "@/app/_components/Badge";
 import { Card } from "@/app/_components/Card";
-import DeleteButton from "@/app/components/DeleteButton";
-import { Progress } from "@/app/components/Progress";
-import type { Item as ItemType } from "@/app/lib/types";
-import { Badge } from "@/app/ui/Badge";
-import { formatDate } from "@/app/utils/date";
+import DeleteButton from "@/app/_components/DeleteButton";
+import { Progress } from "@/app/_components/Progress";
+import type { Item as ItemType } from "@/app/_types/types";
+import { formatDate } from "@/app/_utils/date";
 import { isBefore } from "date-fns";
 import { AlertCircle, Calendar, Package } from "lucide-react";
 

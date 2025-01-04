@@ -4,9 +4,9 @@ import { X } from "lucide-react";
 import { useActionState } from "react";
 import type { z } from "zod";
 
-import FormInput from "@/app/components/FormInput";
-import type { Supplement } from "@/app/lib/types";
-import { itemFormSchema } from "@/app/schema/itemFormSchema";
+import FormInput from "@/app/_components/FormInput";
+import { itemFormSchema } from "@/app/_schema/itemFormSchema";
+import type { Supplement } from "@/app/_types/types";
 import { createItemAction } from "./createItemAction";
 interface ItemFormProps {
   supplement: Supplement;
