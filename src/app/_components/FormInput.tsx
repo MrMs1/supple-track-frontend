@@ -27,6 +27,11 @@ interface FormInputProps {
 
 function FormInput({ label, fieldName, type, placeholder }: FormInputProps) {
   const [field] = useField(fieldName);
+  const { key, ...inputProps } = getInputProps(field, {
+    type,
+    ariaAttributes: true,
+  });
+
   return (
     <div>
       <div className="relative pb-5">
@@ -37,7 +42,8 @@ function FormInput({ label, fieldName, type, placeholder }: FormInputProps) {
           {label}
         </label>
         <input
-          {...getInputProps(field, { type, ariaAttributes: true })}
+          key={key}
+          {...inputProps}
           placeholder={placeholder}
           className={`bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${
             field.errors && field.errors.length > 0

@@ -1,13 +1,13 @@
 import { FormProvider, getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
+import { useActionState } from "react";
 import type { z } from "zod";
-import FormInput from "../components/FormInput";
-import { addItem } from "../lib/backendApi";
-import type { ItemFormData, Supplement } from "../lib/types";
-import { itemFormSchema } from "../schema/itemFormSchema";
 
+import FormInput from "@/app/_components/FormInput";
+import { itemFormSchema } from "@/app/_schema/itemFormSchema";
+import type { Supplement } from "@/app/_types/types";
+import { createItemAction } from "./createItemAction";
 interface ItemFormProps {
   supplement: Supplement;
   onClose: () => void;
@@ -16,36 +16,12 @@ interface ItemFormProps {
 type ItemFormFields = z.infer<typeof itemFormSchema>;
 
 function ItemForm({ supplement, onClose }: ItemFormProps) {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (item: ItemFormData) => addItem(item),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplements"] });
-      onClose();
-    },
-    onError: (error) => {
-      console.log("商品の登録に失敗しました:", error.message);
-    },
-  });
+  const [lastResult, action] = useActionState(createItemAction, undefined);
 
   const [form] = useForm<ItemFormFields>({
-    onSubmit: (event, { formData }) => {
-      event.preventDefault();
-      const item: ItemFormData = {
-        supplementName: supplement.name,
-        itemName: formData.get("itemName") as string,
-        quantity: Number.parseInt(formData.get("itemQuantity") as string),
-        dosagePerUse: Number.parseInt(
-          formData.get("itemDosagePerUse") as string,
-        ),
-        dailyIntakeFrequency: Number.parseInt(
-          formData.get("itemDailyIntakeFrequency") as string,
-        ),
-        expiredAt: new Date(formData.get("itemExpiredAt") as string),
-        startAt: new Date(formData.get("itemStartAt") as string),
-      };
-      mutation.mutate(item);
+    lastResult,
+    onSubmit: () => {
+      onClose();
     },
     onValidate: ({ formData }) => {
       return parseWithZod(formData, { schema: itemFormSchema });
@@ -58,7 +34,7 @@ function ItemForm({ supplement, onClose }: ItemFormProps) {
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-2xl w-full">
         <FormProvider context={form.context}>
-          <form {...getFormProps(form)} className="space-y-6">
+          <form {...getFormProps(form)} className="space-y-6" action={action}>
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold text-gray-900">商品登録</h2>
               <button
@@ -69,7 +45,11 @@ function ItemForm({ supplement, onClose }: ItemFormProps) {
                 <X className="h-6 w-6" />
               </button>
             </div>
-
+            <input
+              type="hidden"
+              name="supplementName"
+              value={supplement.name}
+            />
             <div className="grid grid-cols-2 gap-4">
               <FormInput
                 fieldName="itemName"
@@ -79,35 +59,35 @@ function ItemForm({ supplement, onClose }: ItemFormProps) {
               />
 
               <FormInput
-                fieldName="itemQuantity"
+                fieldName="quantity"
                 label="総数量（錠）"
                 type="number"
                 placeholder="例: 30"
               />
 
               <FormInput
-                fieldName="itemDosagePerUse"
+                fieldName="dosagePerUse"
                 label="1回の摂取量（錠）"
                 type="number"
                 placeholder="例: 1"
               />
 
               <FormInput
-                fieldName="itemDailyIntakeFrequency"
+                fieldName="dailyIntakeFrequency"
                 label="1日の摂取回数"
                 type="number"
                 placeholder="例: 1"
               />
 
               <FormInput
-                fieldName="itemExpiredAt"
+                fieldName="expiredAt"
                 label="使用期限"
                 type="date"
                 placeholder="例: 2025-01-01"
               />
 
               <FormInput
-                fieldName="itemStartAt"
+                fieldName="startAt"
                 label="使用開始日"
                 type="date"
                 placeholder="例: 2025-01-01"

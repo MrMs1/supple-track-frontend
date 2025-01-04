@@ -1,12 +1,12 @@
+"use client";
+import FormInput from "@/app/_components/FormInput";
+import { supplementFormSchema } from "@/app/_schema/supplementFormSchema";
 import { FormProvider, getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
+import { useActionState } from "react";
 import type { z } from "zod";
-import FormInput from "../components/FormInput";
-import { addSupplement } from "../lib/backendApi";
-import type { SupplementFormData } from "../lib/types";
-import { supplementFormSchema } from "../schema/supplementFormSchema";
+import { createSupplementAction } from "./createSupplementAction";
 interface SupplementFormProps {
   onClose: () => void;
 }
@@ -14,48 +14,30 @@ interface SupplementFormProps {
 type SupplementFormFields = z.infer<typeof supplementFormSchema>;
 
 function SupplementForm({ onClose }: SupplementFormProps) {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (supplement: SupplementFormData) => addSupplement(supplement),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplements"] });
-      onClose();
-    },
-    onError: (error) => {
-      console.log("サプリメントの登録に失敗しました:", error.message);
-    },
-  });
+  const [lastResult, action] = useActionState(
+    createSupplementAction,
+    undefined,
+  );
 
   const [form] = useForm<SupplementFormFields>({
-    onSubmit: (event, { formData }) => {
-      event.preventDefault();
-      const supplement: SupplementFormData = {
-        supplementName: formData.get("supplementName") as string,
-        itemName: formData.get("itemName") as string,
-        quantity: Number.parseInt(formData.get("itemQuantity") as string),
-        dosagePerUse: Number.parseInt(
-          formData.get("itemDosagePerUse") as string,
-        ),
-        dailyIntakeFrequency: Number.parseInt(
-          formData.get("itemDailyIntakeFrequency") as string,
-        ),
-        expiredAt: new Date(formData.get("itemExpiredAt") as string),
-        startAt: new Date(formData.get("itemStartAt") as string),
-      };
-      mutation.mutate(supplement);
+    lastResult,
+    onSubmit: () => {
+      onClose();
     },
     onValidate: ({ formData }) =>
       parseWithZod(formData, { schema: supplementFormSchema }),
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
-
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
         <FormProvider context={form.context}>
-          <form {...getFormProps(form)} className="flex flex-col">
+          <form
+            {...getFormProps(form)}
+            className="flex flex-col"
+            action={action}
+          >
             <div className="flex justify-between items-center p-4">
               <h2 className="text-xl font-bold text-gray-900">
                 サプリメント新規登録
@@ -68,14 +50,12 @@ function SupplementForm({ onClose }: SupplementFormProps) {
                 <X className="h-6 w-6" />
               </button>
             </div>
-
             <div className="flex-1 overflow-y-auto p-4">
               <div className="space-y-3">
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-900">
                     サプリメント情報
                   </h3>
-
                   <FormInput
                     fieldName="supplementName"
                     label="サプリメント名"
@@ -95,30 +75,30 @@ function SupplementForm({ onClose }: SupplementFormProps) {
                       placeholder="例: DHC マルチビタミン 30日分"
                     />
                     <FormInput
-                      fieldName="itemQuantity"
+                      fieldName="quantity"
                       label="総数量（錠）"
                       type="number"
                       placeholder="例: 30"
                     />
                     <FormInput
-                      fieldName="itemDosagePerUse"
+                      fieldName="dosagePerUse"
                       label="1回の摂取量（錠）"
                       type="number"
                       placeholder="例: 1"
                     />
                     <FormInput
-                      fieldName="itemDailyIntakeFrequency"
+                      fieldName="dailyIntakeFrequency"
                       label="1日の摂取回数"
                       type="number"
                       placeholder="例: 1"
                     />
                     <FormInput
-                      fieldName="itemExpiredAt"
+                      fieldName="expiredAt"
                       label="使用期限"
                       type="date"
                     />
                     <FormInput
-                      fieldName="itemStartAt"
+                      fieldName="startAt"
                       label="使用開始日"
                       type="date"
                     />
@@ -126,7 +106,6 @@ function SupplementForm({ onClose }: SupplementFormProps) {
                 </div>
               </div>
             </div>
-
             <div className="flex justify-end space-x-3 p-4 bg-white">
               <button
                 type="button"
