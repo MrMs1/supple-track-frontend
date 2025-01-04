@@ -5,10 +5,7 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export default async function SupplementList() {
   const response = await fetch(`${BACKEND_API_URL}/api/supplements`, {
-    next: {
-      tags: ["supplements"],
-      revalidate: 1,
-    },
+    next: { tags: ["supplements"] },
   });
   const supplements: Supplement[] | null = await response
     .json()
