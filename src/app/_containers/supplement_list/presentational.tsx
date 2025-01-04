@@ -1,15 +1,13 @@
 "use client";
 
 import { Skeleton } from "@nextui-org/skeleton";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Pill } from "lucide-react";
-import React, { Suspense, useState } from "react";
-import CreateButton from "../components/CreateButton";
-import { fetchSupplements } from "../lib/backendApi";
-import type { Supplement } from "../lib/types";
-import { SupplementCard } from "./SupplementCard";
-import SupplementForm from "./SupplementForm";
-
+import React, { Suspense, useOptimistic, useTransition } from "react";
+import type { Supplement } from "../../../lib/types";
+import { CreateSupplementButton } from "./_components/CreateSupplementButton";
+import { EmptySupplementCard } from "./_components/EmptySupplementCard";
+import { deleteSupplementAction } from "./_components/deleteSupplementAction";
+import { SupplementCard } from "./_components/supplement/SupplementCard";
 function SupplementListSkeleton() {
   return (
     <div className="space-y-4">
@@ -44,13 +42,26 @@ function SupplementListSkeleton() {
   );
 }
 
-function SupplementList() {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+function SupplementsPresentation({
+  supplements,
+}: {
+  supplements: Supplement[] | null;
+}) {
+  const [_, startTransition] = useTransition();
+  const [optimisticSupplements, setOptimisticSupplements] = useOptimistic(
+    supplements,
+    (currentSupplements, supplementName: string) =>
+      currentSupplements?.filter(
+        (supplement) => supplement.name !== supplementName,
+      ) ?? [],
+  );
 
-  const { data: supplements, isSuccess } = useSuspenseQuery<Supplement[]>({
-    queryKey: ["supplements"],
-    queryFn: fetchSupplements,
-  });
+  const handleDelete = (supplementName: string) => {
+    startTransition(() => {
+      setOptimisticSupplements(supplementName);
+    });
+    deleteSupplementAction(supplementName);
+  };
 
   return (
     <>
@@ -63,42 +74,42 @@ function SupplementList() {
                 サプリメント一覧
               </h2>
             </div>
-            {isSuccess && supplements.length > 0 && (
-              <CreateButton onAdd={() => setIsFormOpen(true)} />
+            {optimisticSupplements && optimisticSupplements.length > 0 && (
+              <CreateSupplementButton />
             )}
           </div>
 
-          {isSuccess && supplements.length === 0 ? (
-            <div className="text-center py-20">
-              <Pill className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="my-2 text-sm font-medium text-gray-900">
-                サプリメントが登録されていません
-              </h3>
-              <CreateButton onAdd={() => setIsFormOpen(true)} />
-            </div>
+          {optimisticSupplements?.length === 0 ? (
+            <EmptySupplementCard />
           ) : (
-            <div className="space-y-4">
-              {supplements.map((supplement) => {
+            <>
+              {optimisticSupplements?.map((supplement) => {
                 return (
                   <SupplementCard
                     key={supplement.name}
                     supplement={supplement}
+                    onDelete={handleDelete}
                   />
                 );
               })}
-            </div>
+            </>
           )}
         </div>
       </div>
-      {isFormOpen && <SupplementForm onClose={() => setIsFormOpen(false)} />}
     </>
   );
 }
 
-export default function SupplementListWithSuspense() {
+interface SupplementsProps {
+  supplements: Supplement[] | null;
+}
+
+export default function SupplementsWithSuspense({
+  supplements,
+}: SupplementsProps) {
   return (
     <Suspense fallback={<SupplementListSkeleton />}>
-      <SupplementList />
+      <SupplementsPresentation supplements={supplements} />
     </Suspense>
   );
 }

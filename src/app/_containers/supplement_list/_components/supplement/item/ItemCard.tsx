@@ -1,30 +1,18 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card } from "@/app/_components/Card";
+import DeleteButton from "@/app/components/DeleteButton";
+import { Progress } from "@/app/components/Progress";
+import type { Item as ItemType } from "@/app/lib/types";
+import { Badge } from "@/app/ui/Badge";
+import { formatDate } from "@/app/utils/date";
 import { isBefore } from "date-fns";
 import { AlertCircle, Calendar, Package } from "lucide-react";
-import DeleteButton from "../components/DeleteButton";
-import { deleteItem } from "../lib/backendApi";
-import type { Item as ItemType } from "../lib/types";
-import { formatDate } from "../utils/date";
-import { Badge } from "./Badge";
-import { Card } from "./Card";
-import { Progress } from "./Progress";
 
 interface ItemCardProps {
   item: ItemType;
+  onDelete: (itemId: string) => void;
 }
 
-export function ItemCard({ item }: ItemCardProps) {
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (itemId: string) => deleteItem(itemId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplements"] });
-    },
-  });
-
-  const onDeleteItem = (itemId: string) => {
-    mutation.mutate(itemId);
-  };
+export function ItemCard({ item, onDelete }: ItemCardProps) {
   const hasExpirationWarning = isBefore(item.expiredAt, item.endAt);
 
   const getSupplyStatus = () => {
@@ -64,7 +52,11 @@ export function ItemCard({ item }: ItemCardProps) {
                   </Badge>
                 </div>
               </div>
-              <DeleteButton onDelete={() => onDeleteItem(item.id)} />
+              <DeleteButton
+                onDelete={() => {
+                  onDelete(item.id);
+                }}
+              />
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

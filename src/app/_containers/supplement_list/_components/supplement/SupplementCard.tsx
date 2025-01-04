@@ -1,36 +1,37 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+"use client";
+
+import { Card } from "@/app/_components/Card";
+import DeleteButton from "@/app/components/DeleteButton";
+import { Progress } from "@/app/components/Progress";
+import type { Supplement } from "@/app/lib/types";
+import { Badge } from "@/app/ui/Badge";
+import { checkExpirationWarning, formatDate } from "@/app/utils/date";
 import { AlertCircle, ChevronRight } from "lucide-react";
-import { useState } from "react";
-import CreateButton from "../components/CreateButton";
-import DeleteButton from "../components/DeleteButton";
-import { deleteSupplement } from "../lib/backendApi";
-import type { Supplement } from "../lib/types";
-import { checkExpirationWarning, formatDate } from "../utils/date";
-import { Badge } from "./Badge";
-import { Card } from "./Card";
-import { ItemCard } from "./ItemCard";
-import ItemForm from "./ItemForm";
-import { Progress } from "./Progress";
+import { startTransition, useOptimistic, useState } from "react";
+import { CreateItemButton } from "./item/CreateItemButton";
+import { ItemCard } from "./item/ItemCard";
+import { deleteItemAction } from "./item/_components/actions";
 
 interface SupplementCardProps {
   supplement: Supplement;
+  onDelete: (supplementName: string) => void;
 }
 
-export function SupplementCard({ supplement }: SupplementCardProps) {
-  const [isItemFormOpen, setIsItemFormOpen] = useState(false);
-  const [selectedSupplement, setSelectedSupplement] = useState(false);
-  const queryClient = useQueryClient();
+export function SupplementCard({ supplement, onDelete }: SupplementCardProps) {
+  const [optimisticItems, setOptimisticItems] = useOptimistic(
+    supplement.items,
+    (currentItems, itemId: string) =>
+      currentItems?.filter((item) => item.id !== itemId) ?? [],
+  );
 
-  const mutation = useMutation({
-    mutationFn: (supplementName: string) => deleteSupplement(supplementName),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplements"] });
-    },
-  });
-
-  const onDeleteSupplement = (supplementName: string) => {
-    mutation.mutate(supplementName);
+  const handleDelete = (itemId: string) => {
+    startTransition(() => {
+      setOptimisticItems(itemId);
+    });
+    deleteItemAction(itemId);
   };
+  const [selectedSupplement, setSelectedSupplement] = useState(false);
+
   const hasExpirationWarning = checkExpirationWarning(supplement.items);
 
   const getSupplyStatus = () => {
@@ -62,7 +63,7 @@ export function SupplementCard({ supplement }: SupplementCardProps) {
                     </div>
                   </div>
                 )}
-                {supplement.items.length > 0 && (
+                {optimisticItems.length > 0 && (
                   <ChevronRight
                     className={`h-5 w-5 text-gray-400 transform transition-transform duration-300 ease-in-out group-hover:text-indigo-600 ${
                       selectedSupplement
@@ -80,7 +81,7 @@ export function SupplementCard({ supplement }: SupplementCardProps) {
                     : "在庫切れ"}
                 </Badge>
                 <span className="text-sm text-gray-500">
-                  {supplement.items.length}個の商品
+                  {optimisticItems.length}個の商品
                 </span>
               </div>
 
@@ -103,11 +104,13 @@ export function SupplementCard({ supplement }: SupplementCardProps) {
               )}
             </div>
 
-            <div className="flex items-center space-x-2">
-              <CreateButton onAdd={() => setIsItemFormOpen(true)} />
-              <DeleteButton
-                onDelete={() => onDeleteSupplement(supplement.name)}
-              />
+            <div className="flex">
+              <div className="mr-2">
+                <CreateItemButton supplement={supplement} />
+              </div>
+              <div>
+                <DeleteButton onDelete={() => onDelete(supplement.name)} />
+              </div>
             </div>
           </div>
         </div>
@@ -119,16 +122,10 @@ export function SupplementCard({ supplement }: SupplementCardProps) {
             : "max-h-0 opacity-0"
         }`}
       >
-        {supplement.items.map((item) => (
-          <ItemCard key={item.id} item={item} />
+        {optimisticItems.map((item) => (
+          <ItemCard key={item.id} item={item} onDelete={handleDelete} />
         ))}
       </div>
-      {isItemFormOpen && (
-        <ItemForm
-          supplement={supplement}
-          onClose={() => setIsItemFormOpen(false)}
-        />
-      )}
     </>
   );
 }

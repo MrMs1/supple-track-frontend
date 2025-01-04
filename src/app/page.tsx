@@ -1,5 +1,5 @@
 import { Package2 } from "lucide-react";
-import SupplementList from "./ui/SupplementList";
+import SupplementList from "./_containers/supplement_list/container";
 
 export default function Home() {
   return (

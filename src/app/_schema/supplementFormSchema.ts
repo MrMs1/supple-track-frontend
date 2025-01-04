@@ -24,27 +24,27 @@ export const supplementFormSchema = z.object({
   itemName: z
     .string({ required_error: "この項目は必須です" })
     .min(1, "商品名は必須です"),
-  itemQuantity: z
+  quantity: z
     .string({ required_error: "この項目は必須です" })
     .min(1, "総数量は必須です")
     .refine(
       (val) => !Number.isNaN(Number(val)) && Number(val) > 0,
       "1以上の数値を入力してください",
     ),
-  itemDosagePerUse: z
+  dosagePerUse: z
     .string({ required_error: "この項目は必須です" })
     .min(1, "1回の摂取量は必須です")
     .refine(
       (val) => !Number.isNaN(Number(val)) && Number(val) > 0,
       "1以上の数値を入力してください",
     ),
-  itemDailyIntakeFrequency: z
+  dailyIntakeFrequency: z
     .string({ required_error: "この項目は必須です" })
     .min(1, "1日の摂取回数は必須です")
     .refine(
       (val) => !Number.isNaN(Number(val)) && Number(val) > 0,
       "1以上の数値を入力してください",
     ),
-  itemExpiredAt: futureDateSchema,
-  itemStartAt: baseDateSchema,
+  expiredAt: futureDateSchema,
+  startAt: baseDateSchema,
 });
