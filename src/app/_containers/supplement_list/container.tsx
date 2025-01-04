@@ -1,5 +1,5 @@
 import type { Supplement } from "@/app/_types/types";
-import SupplementsWithSuspense from "./presentational";
+import { SupplementsPresentation } from "./presentational";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -24,5 +24,5 @@ export default async function SupplementList() {
       console.error(error);
       return null;
     });
-  return <SupplementsWithSuspense supplements={supplements} />;
+  return <SupplementsPresentation supplements={supplements} />;
 }
