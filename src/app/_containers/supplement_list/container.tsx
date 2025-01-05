@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { Supplement } from "@/app/_types/types";
 import retry from "async-retry";
 import { Suspense } from "react";
@@ -41,7 +43,7 @@ async function checkConnection(): Promise<boolean> {
     return false;
   }
 }
-export const dynamic = "force-dynamic";
+
 async function SupplementListContainer() {
   const response = await retry(
     async () => {
