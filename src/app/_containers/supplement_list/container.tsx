@@ -46,7 +46,7 @@ async function SupplementListContainer() {
       });
 
       if (!res.ok) {
-        return null;
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
 
       return res;
