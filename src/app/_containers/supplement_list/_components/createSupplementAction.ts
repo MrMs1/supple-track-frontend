@@ -2,7 +2,8 @@
 
 import { supplementFormSchema } from "@/app/_schema/supplementFormSchema";
 import { parseWithZod } from "@conform-to/zod";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { redirect } from "next/navigation";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -27,7 +28,6 @@ export async function createSupplementAction(
   if (!response.ok) {
     throw new Error("Failed to add supplement");
   }
-  revalidateTag("supplements");
-
+  revalidatePath("/");
   return submission.reply();
 }

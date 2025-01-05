@@ -2,7 +2,7 @@
 
 import type { Supplement } from "@/app/_types/types";
 import { Pill } from "lucide-react";
-import React, { Suspense, useOptimistic, useTransition } from "react";
+import React, { useOptimistic, useTransition } from "react";
 import { CreateSupplementButton } from "./_components/CreateSupplementButton";
 import { EmptySupplementCard } from "./_components/EmptySupplementCard";
 import { deleteSupplementAction } from "./_components/deleteSupplementAction";
