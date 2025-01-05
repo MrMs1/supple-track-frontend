@@ -17,31 +17,24 @@ export default async function SupplementList() {
 }
 
 async function checkConnection(): Promise<boolean> {
+  const controller = new AbortController();
   try {
-    const controller = new AbortController();
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => {
         controller.abort();
-        reject(new Error("Connection timeout"));
-      }, 5000); // タイムアウトを5秒に延長
+      }, 5000);
     });
 
     const fetchPromise = fetch(`${BACKEND_API_URL}/`, {
       signal: controller.signal,
-      headers: {
-        Connection: "keep-alive",
-      },
       next: { revalidate: 0 },
     });
 
-    const response = (await Promise.race([
-      fetchPromise,
-      timeoutPromise,
-    ])) as Response;
-    return response.ok;
+    await Promise.race([fetchPromise, timeoutPromise]);
+    return true;
   } catch (error) {
     if (error instanceof Error) {
-      console.error(`Connection check failed: ${error.message}`);
+      console.error(`Backend health check failed: ${error.message}`);
     }
     return false;
   }
