@@ -23,14 +23,17 @@ async function checkConnection(): Promise<boolean> {
       setTimeout(() => {
         controller.abort();
         reject(new Error("Connection timeout"));
-      }, 3000); // タイムアウト時間を3秒に延長
+      }, 5000); // タイムアウトを5秒に延長
     });
 
     const fetchPromise = fetch(`${BACKEND_API_URL}/`, {
       signal: controller.signal,
+      headers: {
+        Connection: "keep-alive",
+      },
+      next: { revalidate: 0 },
     });
 
-    // Promise.raceの戻り値の型を明示的に指定
     const response = (await Promise.race([
       fetchPromise,
       timeoutPromise,
