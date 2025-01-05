@@ -14,16 +14,51 @@ export default async function SupplementList() {
   );
 }
 
+async function checkConnection(): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1000);
+
+    const response = await fetch(`${BACKEND_API_URL}/`, {
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
 async function SupplementListContainer() {
   const response = await retry(
-    async () =>
-      await fetch(`${BACKEND_API_URL}/api/supplements`, {
+    async () => {
+      // ヘルスチェックで準備状態を確認
+      const isAvailable = await checkConnection();
+      if (!isAvailable) {
+        console.log("Backend is not ready yet, retrying...");
+        throw new Error("Backend not ready");
+      }
+
+      // バックエンドの準備が確認できたら実際のデータを取得
+      const res = await fetch(`${BACKEND_API_URL}/api/supplements`, {
         cache: "no-store",
-      }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      return res;
+    },
     {
       retries: 4,
-      minTimeout: 1000,
+      minTimeout: 2000,
       maxTimeout: 16000,
+      factor: 2,
+      onRetry: (error, attempt) => {
+        console.log(`Retry attempt ${attempt}: Waiting for backend...`, error);
+      },
     },
   );
   const supplements: Supplement[] | null = await response
