@@ -1,4 +1,5 @@
 import type { Supplement } from "@/app/_types/types";
+import pRetry from "p-retry";
 import { Suspense } from "react";
 import { SupplementListSkeleton } from "./_components/SupplementListSkelton";
 import { SupplementsPresentation } from "./presentational";
@@ -14,7 +15,14 @@ export default async function SupplementList() {
 }
 
 async function SupplementListContainer() {
-  const response = await fetch(`${BACKEND_API_URL}/api/supplements`);
+  const response = await pRetry(
+    () => fetch(`${BACKEND_API_URL}/api/supplements`),
+    {
+      retries: 5,
+      minTimeout: 1000,
+      maxTimeout: 16000,
+    },
+  );
   const supplements: Supplement[] | null = await response
     .json()
     .then((data) =>
