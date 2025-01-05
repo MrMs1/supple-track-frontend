@@ -2,7 +2,7 @@
 
 import { itemFormSchema } from "@/app/_schema/itemFormSchema";
 import { parseWithZod } from "@conform-to/zod";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -23,6 +23,6 @@ export async function createItemAction(prevState: unknown, formData: FormData) {
     throw new Error("Failed to add item");
   }
 
-  revalidateTag("supplements");
+  revalidatePath("/");
   return submission.reply();
 }
