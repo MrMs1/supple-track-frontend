@@ -16,43 +16,11 @@ export default async function SupplementList() {
   );
 }
 
-async function checkConnection(): Promise<boolean> {
-  const controller = new AbortController();
-  try {
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => {
-        controller.abort();
-      }, 5000);
-    });
-
-    const fetchPromise = fetch(`${BACKEND_API_URL}/`, {
-      signal: controller.signal,
-      next: { revalidate: 0 },
-    });
-
-    await Promise.race([fetchPromise, timeoutPromise]);
-    return true;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(`Backend health check failed: ${error.message}`);
-    }
-    return false;
-  }
-}
-
 async function SupplementListContainer() {
   const response = await retry(
     async () => {
-      // ヘルスチェックで準備状態を確認
-      const isAvailable = await checkConnection();
-      if (!isAvailable) {
-        console.log("Backend is not ready yet, retrying...");
-        throw new Error("Backend not ready");
-      }
-
-      // バックエンドの準備が確認できたら実際のデータを取得
       const res = await fetch(`${BACKEND_API_URL}/api/supplements`, {
-        cache: "no-store",
+        next: { revalidate: 30 },
       });
 
       if (!res.ok) {
