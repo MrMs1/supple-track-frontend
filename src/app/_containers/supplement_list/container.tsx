@@ -17,15 +17,27 @@ export default async function SupplementList() {
 async function checkConnection(): Promise<boolean> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000);
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        controller.abort();
+        reject(new Error("Connection timeout"));
+      }, 3000); // タイムアウト時間を3秒に延長
+    });
 
-    const response = await fetch(`${BACKEND_API_URL}/`, {
+    const fetchPromise = fetch(`${BACKEND_API_URL}/`, {
       signal: controller.signal,
     });
 
-    clearTimeout(timeoutId);
+    // Promise.raceの戻り値の型を明示的に指定
+    const response = (await Promise.race([
+      fetchPromise,
+      timeoutPromise,
+    ])) as Response;
     return response.ok;
   } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Connection check failed: ${error.message}`);
+    }
     return false;
   }
 }
@@ -52,7 +64,7 @@ async function SupplementListContainer() {
       return res;
     },
     {
-      retries: 4,
+      retries: 5,
       minTimeout: 2000,
       maxTimeout: 16000,
       factor: 2,
