@@ -16,7 +16,10 @@ export default async function SupplementList() {
 
 async function SupplementListContainer() {
   const response = await retry(
-    async () => await fetch(`${BACKEND_API_URL}/api/supplements`),
+    async () =>
+      await fetch(`${BACKEND_API_URL}/api/supplements`, {
+        cache: "no-store",
+      }),
     {
       retries: 4,
       minTimeout: 1000,
