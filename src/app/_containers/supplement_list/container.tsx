@@ -29,7 +29,7 @@ async function checkConnection(): Promise<boolean> {
     return false;
   }
 }
-
+export const dynamic = "force-dynamic";
 async function SupplementListContainer() {
   const response = await retry(
     async () => {
